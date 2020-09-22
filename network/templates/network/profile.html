@@ -1,0 +1,33 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>{{ user_data.username }}'s profile</h1>
+    <p><span><strong>{{ user_data.followers.count }}</strong> followers</span><span style="margin-left: 20px;"><strong>{{ user_data.following.count }}</strong> following</span></p>
+    {% if user.is_authenticated and user != user_data %}
+        <form action="{% url 'follow' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user_data.id }}">
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" id="follow"
+                {% if user_data in user.following.all %}
+                    value="Unfollow"
+                {% else %}
+                    value="Follow"
+                {% endif %}
+                >
+            </div>
+        </form>
+    {% endif %}
+    {% for post in user_posts %}
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-body">
+                <h3 class="profile" data-id="{{ post.user.id }}" onclick="redirect({{ post.user.id }})">{{ post.user.username }}</h3>
+                <p>{{ post.content }}</p>
+                <p style="color: #969696;">{{ post.timestamp }}</p>
+                <i class="fas fa-heart" style="color: red;"></i> <span style="color: #969696;">0</span>
+            </div>
+        </div>
+    {% empty %}
+        <p>No posts found.</p>
+    {% endfor %}
+{% endblock %}

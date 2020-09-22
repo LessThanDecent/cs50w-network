@@ -80,3 +80,29 @@ def post(request):
         post.save()
 
         return HttpResponseRedirect(reverse('index'))
+
+def profile(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse('index'))
+    
+    return render(request, "network/profile.html", {
+        "user_data": user,
+        "user_posts": reversed(Post.objects.filter(user=user))
+    })
+
+@login_required
+def follow(request):
+    if request.method == "POST":
+        target = User.objects.get(id=request.POST["user_id"])
+        user = request.user
+
+        if target in user.following.all():
+            user.following.remove(target)
+        else:
+            user.following.add(target)
+        
+        user.save()
+
+        return HttpResponseRedirect(reverse("profile", args=[request.POST["user_id"]]))
