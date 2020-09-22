@@ -1,5 +1,21 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <h1>All Posts</h1>
+    {% if user.is_authenticated %}
+        <div class="card">
+            <div class="card-body">
+                <h3>New Post</h3>
+                <form action="{% url 'post' %}", method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <textarea class="form-control" name="content"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Post">
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
