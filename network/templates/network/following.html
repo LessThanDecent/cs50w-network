@@ -1,0 +1,17 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+    <h1>Following</h1>
+    {% for post in posts %}
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-body">
+                <h3 class="profile" data-id="{{ post.user.id }}" onclick="redirect({{ post.user.id }})">{{ post.user.username }}</h3>
+                <p>{{ post.content }}</p>
+                <p style="color: #969696;">{{ post.timestamp }}</p>
+                <i class="fas fa-heart" style="color: red;"></i> <span style="color: #969696;">0</span>
+            </div>
+        </div>
+    {% empty %}
+        <p>No posts found.</p>
+    {% endfor %}
+{% endblock %}

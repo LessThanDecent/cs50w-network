@@ -106,3 +106,9 @@ def follow(request):
         user.save()
 
         return HttpResponseRedirect(reverse("profile", args=[request.POST["user_id"]]))
+
+@login_required
+def following(request):
+    return render(request, "network/following.html", {
+        "posts": reversed(Post.objects.filter(user__in=request.user.following.all()))
+    })
