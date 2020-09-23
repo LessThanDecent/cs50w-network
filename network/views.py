@@ -1,6 +1,7 @@
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -10,8 +11,17 @@ from .models import User, Post
 
 
 def index(request):
+    post_list = Post.objects.all()[::-1]
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(post_list, 10)
+    try:
+        posts = paginator.page(page)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     return render(request, "network/index.html", {
-        "posts": reversed(Post.objects.all())
+        "posts": posts
     })
 
 
@@ -87,9 +97,18 @@ def profile(request, user_id):
     except User.DoesNotExist:
         return HttpResponseRedirect(reverse('index'))
     
+    post_list = Post.objects.filter(user=user)[::-1]
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(post_list, 10)
+    try:
+        posts = paginator.page(page)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    
     return render(request, "network/profile.html", {
         "user_data": user,
-        "user_posts": reversed(Post.objects.filter(user=user))
+        "posts": posts
     })
 
 @login_required
@@ -109,6 +128,16 @@ def follow(request):
 
 @login_required
 def following(request):
+    post_list = Post.objects.filter(user__in=request.user.following.all())[::-1]
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(post_list, 10)
+
+    try:
+        posts = paginator.page(page)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     return render(request, "network/following.html", {
-        "posts": reversed(Post.objects.filter(user__in=request.user.following.all()))
+        "posts": posts
     })
