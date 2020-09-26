@@ -9,3 +9,4 @@ class Post(models.Model):
     user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="posts")
     timestamp = models.DateTimeField(auto_now_add=True)
     content = models.CharField(max_length=255)
+    likes = models.ManyToManyField("User", related_name="liked_posts")

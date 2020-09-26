@@ -72,7 +72,7 @@
                     return false;
                 }
 
-                fetch(`/post/${id}`, {
+                fetch(`/post/edit/${id}`, {
                     method: 'PUT',
                     body: JSON.stringify({
                         content: content
@@ -84,6 +84,16 @@
                 document.querySelector(`#edit-btn-${id}`).style.display = 'block';
                 document.querySelector(`#content-${id}`).innerHTML = content;
                 document.querySelector(`#content-${id}`).style.display = 'block';
+            }
+
+            function like(id) {
+                fetch(`/post/like/${id}`, {
+                    method: 'PUT'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector(`#likes-${id}`).innerHTML = data["likes"];
+                })
             }
         </script>
     </body>

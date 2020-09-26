@@ -146,15 +146,33 @@ def following(request):
 @csrf_exempt
 @login_required
 def edit_post(request, post_id):
-    try:
-        post = Post.objects.get(id=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Post not found."}, status=404)
-    
     if request.method == "PUT":
+        try:
+            post = Post.objects.get(user=request.user, id=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post not found."}, status=404)
+
         data = json.loads(request.body)
         if data.get("content") is not None:
             post.content = data["content"]
         
         post.save()
         return HttpResponse(status=204)
+
+@csrf_exempt
+@login_required
+def like_post(request, post_id):
+    if request.method == "PUT":
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return JsonResponse({"error": "Post not found."}, status=404)
+        
+        if request.user in post.likes.all():
+            post.likes.remove(request.user)
+        else:
+            post.likes.add(request.user)
+        
+        post.save()
+
+        return JsonResponse({"likes": post.likes.count()}, status=200)
