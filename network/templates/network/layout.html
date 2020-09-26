@@ -46,9 +46,44 @@
             {% block body %}
             {% endblock %}
         </div>
-        <script tpye="text/javascript">
+        <script type="text/javascript">
             function redirect(id) {
                 location.href = "{% url 'profile' 1 %}".replace(/1/, id.toString());
+            }
+
+            function edit(id) {
+                document.querySelector(`#textarea-${id}`).value = document.querySelector(`#textarea-${id}`).dataset.content;
+                document.querySelector(`#editable-${id}`).style.display = 'block';
+                document.querySelector(`#edit-btn-${id}`).style.display = 'none';
+                document.querySelector(`#content-${id}`).style.display = 'none';
+                return false;
+            }
+
+            function save(id) {
+                const textarea = document.querySelector(`#textarea-${id}`);
+                const content = textarea.value;
+                if (content.length > 255) {
+                    document.querySelector(`#alert-${id}`).style.display = 'block';
+                    document.querySelector(`#alert-${id}`).innerHTML = 'Post length must be under 255 characters.';
+                    return false;
+                } else if (content.length === 0) {
+                    document.querySelector(`#alert-${id}`).style.display = 'block';
+                    document.querySelector(`#alert-${id}`).innerHTML = 'Post content cannot be empty.';
+                    return false;
+                }
+
+                fetch(`/post/${id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        content: content
+                    })
+                });
+
+                document.querySelector(`#editable-${id}`).style.display = 'none';
+                document.querySelector(`#alert-${id}`).style.display = 'none';
+                document.querySelector(`#edit-btn-${id}`).style.display = 'block';
+                document.querySelector(`#content-${id}`).innerHTML = content;
+                document.querySelector(`#content-${id}`).style.display = 'block';
             }
         </script>
     </body>

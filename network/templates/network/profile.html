@@ -22,7 +22,21 @@
         <div class="card" style="margin-top: 20px;">
             <div class="card-body">
                 <h3 class="profile" data-id="{{ post.user.id }}" onclick="redirect({{ post.user.id }})">{{ post.user.username }}</h3>
-                <p>{{ post.content }}</p>
+
+                {% if user.is_authenticated and user == post.user %}
+                    <a href="" onclick="return edit({{post.id}})" id="edit-btn-{{post.id}}">Edit</a>
+                    <div id="editable-{{post.id}}" style="display: none;">
+                        <div class="form-group">
+                            <textarea id="textarea-{{post.id}}" style="width: 100%;" class="form-control" data-content="{{post.content}}"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <div id="alert-{{post.id}}" class="alert alert-danger" style="display: none;"></div>
+                            <button class="btn btn-primary" class="form-control" onclick="save({{post.id}})">Save</button>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <p id="content-{{post.id}}">{{ post.content }}</p>
                 <p style="color: #969696;">{{ post.timestamp }}</p>
                 <i class="fas fa-heart" style="color: red;"></i> <span style="color: #969696;">0</span>
             </div>
